@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function useCountdown({ minutes, onStart, onStop, onComplete }) {
-  const timerId = useRef(null);
-  const time = minutes * 60;
+export default function useCountdown({ seconds, onStart, onStop, onComplete }) {
+  const timerId = useRef(null)
+  const time = seconds
   const [endTime, setEndTime] = useState(null)
   // const [progress, setProgress] = useState(0)
   const [timeLeft, setTime] = useState(time)
@@ -14,7 +14,7 @@ export default function useCountdown({ minutes, onStart, onStop, onComplete }) {
   };
 
   const tick = useCallback(() => {
-    // console.log(`current: ${new Date()} difference: ${endTime && (endTime - new Date())}`)
+    // console.log(endTime)
     console.log(timeLeft)
     if (timeLeft > 0) {
       setTime(Math.floor((endTime - new Date()) / 1000))
@@ -48,7 +48,7 @@ export default function useCountdown({ minutes, onStart, onStop, onComplete }) {
   }
 
   const start = useCallback(() => {
-    setEndTime(createEndTime(time))
+    setEndTime(createEndTime(timeLeft))
     setTicking(true);
     onStart?.();
   }, [onStart]);
@@ -58,10 +58,14 @@ export default function useCountdown({ minutes, onStart, onStop, onComplete }) {
     onStop?.();
   }, [onStop]);
 
-  const reset = useCallback(() => {
-    setTicking(false);
+  const reset = useCallback((time) => {
+    setTicking(false)
+    setTime(time)
+    setEndTime(createEndTime(time))
+    setTicking(true)
+
     // setProgress(0);
-    onStop?.();
+    onStop?.()
   }, [onStop]);
 
   return {

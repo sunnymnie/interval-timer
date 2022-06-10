@@ -1,14 +1,113 @@
-import { Box, Button, Container, Text } from '@chakra-ui/react';
+import { Box, Button, Container, Input, Select, Text } from '@chakra-ui/react';
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import useCountdown from '@components/useCountdown'
+import { audioPlayer } from '@components/audioPlayer';
 // import styles from '../styles/Home.module.css'
+
+// const startSound = audioPlayer({
+//   asset: "sounds/start.mp3",
+//   volume: 0.5,
+// })
+
+// const endSound = audioPlayer({
+//   asset: "sounds/end.mp3",
+//   volume: 0.5,
+// })
 
 export default function Home() {
 
+  const [plan, setPlan] = useState([])
+  const [name, setName] = useState("Workout")
+  const [length, setLength] = useState(4)
+  const [mode, setMode] = useState("work")
+
+  const lengths = {
+    work: 25 * 60,
+    break: 5 * 60,
+    longBreak: 40 * 60
+  }
+
+  const newBlock = (n, l, p) => {
+    let block = new Map()
+    block.set("name", n)
+    block.set("length", l)
+    block.set("progress", p)
+    return block
+  }
+
+  const addToPlan = () => {
+    setPlan([...plan, newBlock(name, length, 0)])
+  }
+
+  const updateProgress = () => {
+    let newPlan = []
+    let changed = false
+    plan.forEach(e => {
+      if (!changed && e.get("progress") < e.get("length")) {
+        newPlan.push(newBlock(e.get("name"), e.get("length"), e.get("progress") + 1))
+        changed = true
+      } else {
+        newPlan.push(e)
+      }
+    })
+    return newPlan
+  }
+
+  const getCurrBreak = (plan) => {
+    for (let i = 0; i < plan.length; i++) {
+      if (plan[i].get("progress") < plan[i].get("length")) {
+        if (plan[i].get("progress") === 0) {
+          console.log("setting longbreak")
+          return "longBreak"
+        } else {
+          console.log("setting break")
+          return "break"
+        }
+      }
+    }
+    return "finish"
+  }
+  const next = useCallback(() => {
+    // debugger
+    console.log(`mode is currently ${mode}`)
+    if (mode === "work") {
+      let newPlan = updateProgress()
+      setMode(getCurrBreak(newPlan))
+      setPlan(newPlan)
+    } else {
+      setMode("work")
+    }
+
+  })
+
+  const [breakSound, setBreakSound] = useState(null)
+  const [startSound, setStartSound] = useState(null)
+
+
+  useEffect(() => {
+    setBreakSound(new Audio('/sounds/end.mp3')) // only call client
+    setStartSound(new Audio('/sounds/start.mp3'))
+
+  }, [])
+
+  useEffect(() => {
+    if (plan.length > 0) {
+      mode !== "finish" && reset(lengths[mode])
+      if (mode === "work") {
+        startSound.play()
+      } else {
+        breakSound.play()
+      }
+    }
+  }, [mode])
+
+  const finish = () => {
+    next()
+  }
   const { ticking, start, stop, reset, timeLeft, progress } = useCountdown({
-    minutes: 1,
+    seconds: lengths[mode],
     onStart: () => {
       // updateFavicon(mode);
       console.log('started')
@@ -35,6 +134,7 @@ export default function Home() {
     return minutes + ":" + seconds
   }
 
+
   return (
     <div className="HEader">
       <Head>
@@ -46,17 +146,48 @@ export default function Home() {
         pt="10"
         align="center"
         justify="space-between">
-
+        <Box>
+          <Text fontSize="xl">Currently {mode}</Text>
+        </Box>
         <Box>
           <Text fontSize="6xl">{formatTime(timeLeft)}</Text>
         </Box>
         <Button onClick={ticking ? stop : start}>
           {ticking ? "Stop" : "Start"}
         </Button>
-        <Button onClick={reset}>
-          Reset
+        <Button onClick={finish}>
+          Finish
         </Button>
       </Container>
+
+      <Container
+        pt="10"
+        align="center"
+      >
+        <Box
+          justify="space-between"
+          display="flex">
+          <Input onChange={(event) => setName(event.target.value)} placeholder='Name of workout'></Input>
+          <Input onChange={(event) => setLength(event.target.value)} placeholder='Number of rounds'></Input>
+        </Box>
+        <Button onClick={addToPlan}>
+          Add to plan
+        </Button>
+        <Box>
+          {/* {plan} */}
+          {plan.map((e, i) => {
+            return (
+              <Box key={i} pt="4">
+                <Box bg="gray.200" py="2">
+                  <Text>{e.get("name")}</Text>
+                </Box>
+                <Text>Progress: {e.get("progress")}/{e.get("length")}</Text>
+              </Box>
+            )
+          })}
+        </Box>
+      </Container>
+
 
 
     </div>
