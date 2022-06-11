@@ -14,12 +14,13 @@ export default function Home() {
   const [plan, setPlan] = useState([])
   const [name, setName] = useState("Workout")
   const [length, setLength] = useState(4)
+  // let length = 4
   const [mode, setMode] = useState("work")
 
   const lengths = {
-    work: 25 * 1,
-    break: 5 * 1,
-    longBreak: 40 * 1
+    work: 25 * 60,
+    break: 5 * 60,
+    longBreak: 40 * 60
   }
 
   const newBlock = (n, l, p, s) => {
@@ -162,8 +163,14 @@ export default function Home() {
         <Box
           justify="space-between"
           display="flex">
-          <Input onChange={(event) => setName(event.target.value)} placeholder='Name of workout'></Input>
-          <Input onChange={(event) => setLength(event.target.value)} placeholder='Number of rounds'></Input>
+          <Input
+            onChange={(event) => setName(event.target.value)}
+            placeholder='Name of workout'
+            value={name}></Input>
+          <Input
+            onChange={(event) => setLength(event.target.value)}
+            placeholder='Number of rounds'
+            value={length}></Input>
         </Box>
         <Button onClick={addToPlan}>
           Add to plan
