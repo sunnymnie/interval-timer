@@ -8,7 +8,7 @@ export default function Navbar() {
             <Container
                 display="flex"
                 maxW="container.md"
-                w="40%"
+                w="50%"
                 my="2"
                 wrap="wrap"
             >

@@ -8,5 +8,8 @@ export const formatTime = (time) => {
     }
     let seconds = (time - Math.floor(time / 60) * 60).toString()
     seconds = seconds.length === 1 ? "0" + seconds : seconds
+    if (isNaN(seconds)) {
+        seconds = "00"
+    }
     return minutes + ":" + seconds
 }

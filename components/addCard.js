@@ -1,5 +1,7 @@
-import { Box, Container, Input, Button, Flex, HStack, Spacer, Text, useColorModeValue } from "@chakra-ui/react"
+import { Box, Container, Input, Button, Flex, HStack, Spacer, Text, IconButton } from "@chakra-ui/react"
 import { useState } from "react"
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5'
+
 
 export default function AddCard({ show, add }) {
 
@@ -38,13 +40,15 @@ export default function AddCard({ show, add }) {
                                     value={length}
                                     variant="flushed"
                                     width="2em"></Input>
-                                <Button
+                                <IconButton
                                     mx="2"
                                     onClick={() => setLength(Number(length) + 1)}
-                                    disabled={Number(length) > 9}>+1</Button>
-                                <Button
+                                    disabled={Number(length) > 9}
+                                    icon={<IoChevronUp />} />
+                                <IconButton
                                     onClick={() => setLength(Number(length) - 1)}
-                                    disabled={Number(length) < 2}>-1</Button>
+                                    disabled={Number(length) < 2}
+                                    icon={<IoChevronDown />} />
                                 <Spacer />
                                 <Button onClick={addToPlan} disabled={length === "" | !!!Number.isInteger(Number(length)) || length > 10 || name === ""}>
                                     Add to plan
