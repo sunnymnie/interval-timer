@@ -15,7 +15,6 @@ export default function useCountdown({ seconds, onStart, onStop, onComplete }) {
 
   const tick = useCallback(() => {
     // console.log(endTime)
-    console.log(timeLeft)
     if (timeLeft > 0) {
       setTime(Math.floor((endTime - new Date()) / 1000))
       // setProgress((count) => count + 1);

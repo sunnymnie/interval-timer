@@ -3,6 +3,7 @@ import { IoAddCircleOutline } from "react-icons/io5"
 
 
 export default function TaskList({ tasks, adding, startAdding, children }) {
+    const addingColor = useColorModeValue("gray.400", "gray.600")
     return (
         <Container>
             <Box>
@@ -14,7 +15,7 @@ export default function TaskList({ tasks, adding, startAdding, children }) {
                         bg=""
                         icon={<IoAddCircleOutline />}
                         onClick={startAdding}
-                        color={useColorModeValue("gray.400", "gray.600")}
+                        color={addingColor}
                     />
                 </Box>}
         </Container >
